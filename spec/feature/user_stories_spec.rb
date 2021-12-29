@@ -28,8 +28,8 @@ describe 'User Stories' do
   # So I can decide whether to use the docking station
   # I want to see a bike that has been docked
   it 'a person can see if a docking station has a docked bike' do
-    station.dock(bike)
-    expect(station.bikes).to include bike
+    docked_bikes = station.dock(bike)
+    expect(docked_bikes).to include bike
   end
 
   # As a member of the public,
@@ -54,5 +54,13 @@ describe 'User Stories' do
   # I want a docking station to have a default capacity of 20 bikes
   it 'docking stations have a default capacity' do
     expect(station.capacity).to eq DockingStation::DEFAULT_CAPACITY
+  end
+
+  # As a system maintainer,
+  # So that busy areas can be served more effectively,
+  # I want to be able to specify a larger capacity when necessary
+  it 'docking stations can have their capacity specified on initialize' do
+    larger_station = DockingStation.new(50)
+    expect(larger_station.capacity).to eq 50
   end
 end

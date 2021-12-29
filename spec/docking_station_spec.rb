@@ -20,8 +20,8 @@ describe DockingStation do
 
   describe '#dock' do
     it 'adds the bike to the bikes collection' do
-      station.dock(bike)
-      expect(station.bikes).to include bike
+      docked_bikes = station.dock(bike)
+      expect(docked_bikes).to include bike
     end
 
     context 'when full' do
@@ -33,20 +33,18 @@ describe DockingStation do
     end
   end
 
-  describe '#bikes' do
-    it 'is initially empty' do
-      expect(station.bikes).to be_empty
-    end
-
-    it 'returns all the docked bikes' do
-      station.dock(bike)
-      expect(station.bikes).to eq [bike]
-    end
-  end
-
   describe '#capacity' do
-    it 'has a default capacity' do
-      expect(station.capacity).to eq DockingStation::DEFAULT_CAPACITY
+    context 'when no capacity given on initialize'do
+      it 'returns the default capacity' do
+        expect(station.capacity).to eq DockingStation::DEFAULT_CAPACITY
+      end
+    end
+
+    context 'when a capacity is given on initialize' do
+      subject(:larger_station)    { described_class.new(50) }
+      it 'returns the specified capacity' do
+        expect(larger_station.capacity).to eq 50
+      end
     end
   end
 end
