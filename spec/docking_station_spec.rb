@@ -5,7 +5,7 @@ describe DockingStation do
   let(:bike)          { double :bike }
 
   describe '#release_bike' do
-    it 'releases a docked bike' do
+    it 'removes a bike from the bikes collection' do
       station.dock(bike)
       expect(station.release_bike).to eq bike
     end
@@ -19,23 +19,34 @@ describe DockingStation do
   end
 
   describe '#dock' do
-    it 'docks a bike' do
-      expect(station.dock(bike)).to eq bike
+    it 'adds the bike to the bikes collection' do
+      station.dock(bike)
+      expect(station.bikes).to include bike
     end
 
     context 'when full' do
       it 'raises an error' do
-        station.dock(bike)
+        station.capacity.times { station.dock(bike) }
         message = "Cannot dock bike: station is full"
         expect { station.dock(bike) }.to raise_error message
       end
     end
   end
 
-  describe '#bike' do
-    it 'returns a docked bike' do
+  describe '#bikes' do
+    it 'is initially empty' do
+      expect(station.bikes).to be_empty
+    end
+
+    it 'returns all the docked bikes' do
       station.dock(bike)
-      expect(station.bike).to eq bike
+      expect(station.bikes).to eq [bike]
+    end
+  end
+
+  describe '#capacity' do
+    it 'has a default capacity' do
+      expect(station.capacity).to eq DockingStation::DEFAULT_CAPACITY
     end
   end
 end

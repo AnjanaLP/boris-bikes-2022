@@ -29,7 +29,7 @@ describe 'User Stories' do
   # I want to see a bike that has been docked
   it 'a person can see if a docking station has a docked bike' do
     station.dock(bike)
-    expect(station.bike).to eq bike
+    expect(station.bikes).to include bike
   end
 
   # As a member of the public,
@@ -44,8 +44,15 @@ describe 'User Stories' do
   # So that I can control the distribution of bikes,
   # I'd like docking stations not to accept more bikes than their capacity
   it 'full docking stations cannot dock bikes' do
-    station.dock(bike)
+    station.capacity.times { station.dock(bike) }
     message = "Cannot dock bike: station is full"
     expect { station.dock(bike) }.to raise_error message
+  end
+
+  # As a system maintainer,
+  # So that I can plan the distribution of bikes,
+  # I want a docking station to have a default capacity of 20 bikes
+  it 'docking stations have a default capacity' do
+    expect(station.capacity).to eq DockingStation::DEFAULT_CAPACITY
   end
 end
