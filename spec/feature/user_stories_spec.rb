@@ -15,4 +15,13 @@ describe 'User Stories' do
     bike = Bike.new
     expect { bike.working? }.not_to raise_error
   end
+
+  # As a member of the public
+  # So I can return bikes I've hired
+  # I want to dock my bike at the docking station
+  it 'a docking station can dock a bike' do
+    station = DockingStation.new
+    bike = Bike.new
+    expect { station.dock(bike) }.not_to raise_error
+  end
 end
