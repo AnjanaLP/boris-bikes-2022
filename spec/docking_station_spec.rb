@@ -5,7 +5,17 @@ describe DockingStation do
   let(:bike)          { double :bike }
 
   describe '#release_bike' do
-    it { is_expected.to respond_to :release_bike }
+    it 'releases a docked bike' do
+      station.dock(bike)
+      expect(station.release_bike).to eq bike
+    end
+
+    context 'when empty' do
+      it 'raises an error' do
+        message = "Cannot release bike: no bikes available"
+        expect { station.release_bike }.to raise_error message
+      end
+    end
   end
 
   describe '#dock' do

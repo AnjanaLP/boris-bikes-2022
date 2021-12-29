@@ -5,8 +5,9 @@ describe 'User Stories' do
   # As a person,
   # So that I can use a bike,
   # I'd like a docking station to release a bike
-  it 'a docking station can release a bike' do
-    expect{ station.release_bike }.not_to raise_error
+  it 'a docking station can release a docked bike' do
+    station.dock(bike)
+    expect(station.release_bike).to eq bike
   end
 
   # As a person,
@@ -29,5 +30,13 @@ describe 'User Stories' do
   it 'a person can see if a docking station has a docked bike' do
     station.dock(bike)
     expect(station.bike).to eq bike
+  end
+
+  # As a member of the public,
+  # So that I am not confused and charged unnecessarily,
+  # I'd like docking stations not to release bikes when there are none available
+  it 'empty docking stations cannot release bikes' do
+    message = "Cannot release bike: no bikes available"
+    expect { station.release_bike }.to raise_error message
   end
 end
