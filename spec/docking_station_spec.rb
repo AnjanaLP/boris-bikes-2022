@@ -28,9 +28,9 @@ describe DockingStation do
   end
 
   describe '#dock' do
-    it 'adds the bike to the bikes collection' do
-      docked_bikes = station.dock(bike)
-      expect(docked_bikes).to include bike
+    it 'adds the bike (broken or not) to the bikes collection' do
+      docked_bikes = station.dock(bike) && station.dock(broken_bike)
+      expect(docked_bikes.count).to eq 2
     end
 
     context 'when full' do
