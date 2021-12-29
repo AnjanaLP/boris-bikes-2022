@@ -7,6 +7,7 @@ class DockingStation
   end
 
   def dock(bike)
+    raise "Cannot dock bike: station is full" if @bike
     @bike = bike
   end
 end

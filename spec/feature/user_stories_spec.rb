@@ -39,4 +39,13 @@ describe 'User Stories' do
     message = "Cannot release bike: no bikes available"
     expect { station.release_bike }.to raise_error message
   end
+
+  # As a maintainer of the system,
+  # So that I can control the distribution of bikes,
+  # I'd like docking stations not to accept more bikes than their capacity
+  it 'full docking stations cannot dock bikes' do
+    station.dock(bike)
+    message = "Cannot dock bike: station is full"
+    expect { station.dock(bike) }.to raise_error message
+  end
 end
