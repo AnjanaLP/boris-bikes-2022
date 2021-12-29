@@ -2,10 +2,11 @@ require 'docking_station'
 
 describe DockingStation do
   subject(:station)   { described_class.new }
-  let(:bike)          { double :bike }
+  let(:bike)          { double :bike, working?: true }
+  let(:broken_bike)   { double :bike, working?: false }
 
   describe '#release_bike' do
-    it 'removes a bike from the bikes collection' do
+    it 'removes a working bike from the bikes collection' do
       station.dock(bike)
       expect(station.release_bike).to eq bike
     end
@@ -14,6 +15,14 @@ describe DockingStation do
       it 'raises an error' do
         message = "Cannot release bike: no bikes available"
         expect { station.release_bike }.to raise_error message
+      end
+    end
+
+    context 'when no working bikes' do
+      it 'raises an error' do
+        station.dock(broken_bike)
+        message = "Cannot release bike: no working bikes available"
+        expect{ station.release_bike }.to raise_error message
       end
     end
   end

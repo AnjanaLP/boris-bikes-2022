@@ -9,7 +9,8 @@ class DockingStation
 
   def release_bike
     raise "Cannot release bike: no bikes available" if empty?
-    remove_bike
+    raise "Cannot release bike: no working bikes available" unless working_bike
+    remove_working_bike
   end
 
   def dock(bike)
@@ -18,7 +19,7 @@ class DockingStation
   end
 
   private
-  
+
   attr_reader :bikes
 
   def empty?
@@ -29,11 +30,15 @@ class DockingStation
     bikes.count >= capacity
   end
 
-  def remove_bike
-    bikes.pop
+  def remove_working_bike
+    bikes.delete(working_bike)
   end
 
   def add_bike(bike)
     bikes << bike
+  end
+
+  def working_bike
+    bikes.detect { |bike| bike.working? }
   end
 end

@@ -71,4 +71,17 @@ describe 'User Stories' do
     bike.report_broken
     expect(bike).not_to be_working
   end
+
+  # As a maintainer of the system,
+  # So that I can manage broken bikes and not disappoint users,
+  # I'd like docking stations not to release broken bikes
+  it 'docking stations do not release broken bikes' do
+    station.dock(bike)
+    second_bike = Bike.new
+    station.dock(second_bike)
+    second_bike.report_broken
+    station.release_bike
+    message = "Cannot release bike: no working bikes available"
+    expect{ station.release_bike }.to raise_error message
+  end
 end
