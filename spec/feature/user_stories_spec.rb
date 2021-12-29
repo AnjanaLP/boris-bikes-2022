@@ -14,7 +14,7 @@ describe 'User Stories' do
   # So that I can use a good bike,
   # I'd like to see if a bike is working
   it 'a person can see if a bike is working' do
-    expect { bike.working? }.not_to raise_error
+    expect(bike).to be_working
   end
 
   # As a member of the public
@@ -62,5 +62,13 @@ describe 'User Stories' do
   it 'docking stations can have their capacity specified on initialize' do
     larger_station = DockingStation.new(50)
     expect(larger_station.capacity).to eq 50
+  end
+
+  # As a member of the public,
+  # So that I reduce the chance of getting a broken bike in future,
+  # I'd like to report a bike as broken when I return it
+  it 'bikes can be reported as broken' do
+    bike.report_broken
+    expect(bike).not_to be_working
   end
 end
