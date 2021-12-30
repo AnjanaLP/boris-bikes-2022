@@ -1,59 +1,34 @@
 require 'docking_station'
+require 'support/shared_examples_for_bike_container'
 
 describe DockingStation do
   subject(:station)   { described_class.new }
-  let(:bike)          { double :bike, working?: true }
-  let(:broken_bike)   { double :bike, working?: false }
+  let(:bike)          { double :bike, report_broken: nil }
 
   describe '#release_bike' do
-    it 'removes a working bike from the bikes collection' do
-      station.dock(bike)
-      expect(station.release_bike).to eq bike
-    end
-
-    context 'when empty' do
-      it 'raises an error' do
-        message = "Cannot release bike: no bikes available"
-        expect { station.release_bike }.to raise_error message
-      end
-    end
-
     context 'when no working bikes' do
       it 'raises an error' do
-        station.dock(broken_bike)
-        message = "Cannot release bike: no working bikes available"
+        allow(bike).to receive(:working?).and_return false
+        report_broken_at_station
+        message = "Cannot release bike: no bikes available"
         expect{ station.release_bike }.to raise_error message
       end
     end
   end
 
   describe '#dock' do
-    it 'adds the bike (broken or not) to the bikes collection' do
-      docked_bikes = station.dock(bike) && station.dock(broken_bike)
-      expect(docked_bikes.count).to eq 2
-    end
-
-    context 'when full' do
-      it 'raises an error' do
-        station.capacity.times { station.dock(bike) }
-        message = "Cannot dock bike: station is full"
-        expect { station.dock(bike) }.to raise_error message
+    context 'when bike is reported broken' do
+      it 'still accepts the bike' do
+        report_broken_at_station
+        expect(station).not_to be_empty
       end
     end
   end
 
-  describe '#capacity' do
-    context 'when no capacity given on initialize'do
-      it 'returns the default capacity' do
-        expect(station.capacity).to eq DockingStation::DEFAULT_CAPACITY
-      end
-    end
-
-    context 'when a capacity is given on initialize' do
-      subject(:larger_station)    { described_class.new(50) }
-      it 'returns the specified capacity' do
-        expect(larger_station.capacity).to eq 50
-      end
+  describe '#release_broken_bike' do
+    it 'is removed from the bikes collection' do
+      station.release_broken_bike(bike)
+      expect(station).to be_empty
     end
   end
 end

@@ -1,6 +1,8 @@
 describe 'User Stories' do
   let(:station)   { DockingStation.new }
   let(:bike)      { Bike.new }
+  let(:van)       { Van.new }
+  let(:garage)    { Garage.new }
 
   # As a person,
   # So that I can use a bike,
@@ -28,8 +30,8 @@ describe 'User Stories' do
   # So I can decide whether to use the docking station
   # I want to see a bike that has been docked
   it 'a person can see if a docking station has a docked bike' do
-    docked_bikes = station.dock(bike)
-    expect(docked_bikes).to include bike
+    station.dock(bike)
+    expect(station).not_to be_empty
   end
 
   # As a member of the public,
@@ -45,7 +47,7 @@ describe 'User Stories' do
   # I'd like docking stations not to accept more bikes than their capacity
   it 'full docking stations cannot dock bikes' do
     station.capacity.times { station.dock(bike) }
-    message = "Cannot dock bike: station is full"
+    message = "Cannot add bike: DockingStation full"
     expect { station.dock(bike) }.to raise_error message
   end
 
@@ -68,7 +70,7 @@ describe 'User Stories' do
   # So that I reduce the chance of getting a broken bike in future,
   # I'd like to report a bike as broken when I return it
   it 'bikes can be reported as broken' do
-    bike.report_broken
+    report_broken_at_station
     expect(bike).not_to be_working
   end
 
@@ -76,12 +78,8 @@ describe 'User Stories' do
   # So that I can manage broken bikes and not disappoint users,
   # I'd like docking stations not to release broken bikes
   it 'docking stations do not release broken bikes' do
-    station.dock(bike)
-    second_bike = Bike.new
-    station.dock(second_bike)
-    second_bike.report_broken
-    station.release_bike
-    message = "Cannot release bike: no working bikes available"
+    report_broken_at_station
+    message = "Cannot release bike: no bikes available"
     expect{ station.release_bike }.to raise_error message
   end
 
@@ -89,8 +87,50 @@ describe 'User Stories' do
   # So that I can manage broken bikes and not disappoint users,
   # I'd like docking stations to accept returning bikes (broken or not)
   it 'docking stations accept broken bikes' do
-    bike.report_broken
-    docked_bikes = station.dock(bike)
-    expect(docked_bikes).to include bike
+    report_broken_at_station
+    expect(station).not_to be_empty
+  end
+
+  # As a maintainer of the system,
+  # So that I can manage broken bikes and not disappoint users,
+  # I'd like vans to take broken bikes from docking stations and deliver them to garages to be fixed
+  it 'vans load broken bikes from docking stations' do
+    report_broken_at_station
+    van.load(bike, station)
+    expect(van).not_to be_empty
+  end
+
+  it 'vans cannot load working bikes' do
+    station.dock(bike)
+    message = "Do not load bike: bike is not broken"
+    expect { van.load(bike, station) }.to raise_error message
+  end
+
+  it 'loaded bikes are no longer at the docking station' do
+    report_broken_at_station
+    van.load(bike, station)
+    expect(station).to be_empty
+  end
+
+  it 'garages accept broken bikes from vans' do
+    report_broken_at_station
+    van.load(bike, station)
+    van.unload(garage)
+    expect(garage).not_to be_empty
+  end
+
+  it 'unloaded bikes are no longer in the van' do
+    report_broken_at_station
+    van.load(bike, station)
+    van.unload(garage)
+    expect(van).to be_empty
+  end
+
+  it 'garages fix the broken bikes' do
+    report_broken_at_station
+    van.load(bike, station)
+    van.unload(garage)
+    garage.fix_bike(bike)
+    expect(bike).to be_working
   end
 end
